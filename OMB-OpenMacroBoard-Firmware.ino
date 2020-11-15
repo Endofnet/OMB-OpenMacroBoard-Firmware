@@ -5,6 +5,10 @@
 // Buttons
 #define BT_CNT    10
 #define TRG_LIM   2
+#define STX       2 // Start of text
+#define ETX       3 // End of text
+#define SO        14 // ShiftOut
+#define SI        15 // ShiftIn
 int btPins[BT_CNT] = {A6, A11, A7, A8, A9, A10, 5, 13, A0, A1};
 uint8_t btStates[BT_CNT] = {1};
 int btCounter[BT_CNT] = {0};
@@ -17,36 +21,44 @@ Adafruit_NeoPixel leds(BT_CNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 uint32_t btCol[BT_CNT] = {0};
 uint8_t btLedState[BT_CNT] = {0};
 
-
+Button buttons[BT_CNT];
 
 
 void setup() {  
   // LED
   leds.begin();
   leds.show();
-  leds.setBrightness(100);
-  // DEBUG LED
-  for(int i = 0; i < BT_CNT; i++)
-  {
-    btCol[i] = leds.Color(255-25*i,25*i,0);
-  }
-  
-  
+  leds.setBrightness(100); 
   // Buttons
   for(int i = 0; i < BT_CNT; i++)
   {
-    pinMode(btPins[i], INPUT_PULLUP);
+    buttons[i] = Button(btPins[i], i, &leds);
     btCommand[i] = String(i);
   }
+  btCommand[9] = "test";
+  // DEBUG LED
+  buttons[0].setEffect(Button::ColorEffect::off);
+  buttons[1].setEffect(Button::ColorEffect::solid);
+  buttons[2].setEffect(Button::ColorEffect::onPush);
+  buttons[3].setEffect(Button::ColorEffect::onIdle);
+  buttons[4].setEffect(Button::ColorEffect::toggle);
+  buttons[5].setEffect(Button::ColorEffect::fade);
+  buttons[5].setFadeCount(100);
+  buttons[6].setEffect(Button::ColorEffect::invFade);
+  buttons[6].setFadeCount(200);
+  buttons[7].setEffect(Button::ColorEffect::remote);
+  buttons[8].setEffect(Button::ColorEffect::off);
+  buttons[9].setEffect(Button::ColorEffect::off);
+
   Keyboard.begin();
   // Serial
   Serial.begin(115200);
 }
 
 void loop() {
-  readButtons();
-  doActions();
+  updateButtons();
   checkSerial();
+  leds.show();
   delay(5);
 }
 
@@ -83,34 +95,50 @@ void ParseCommand(String cmdStr)
   }
 }
 
-void readButtons()
+void updateButtons()
 {
   for(int i = 0; i < BT_CNT; i++)
   {
-    int state = digitalRead(btPins[i]);
-    if(state == 0 && btCounter[i] >= 0)
-      btCounter[i]++;
-    else if (state == 1)
-      btCounter[i] = 0;
-    if(btCounter[i] >= TRG_LIM && btCounter[i] > 0) 
+    if(buttons[i].Poll())
     {
-      btTrigger[i] = 1;
-      btCounter[i] = -1;
+      doAction(i);
     }
-    else btTrigger[i] = 0;
+    buttons[i].handleLED();
   }
 }
 
-void doActions()
+void doAction(int actionNr)
 {
-  for(int i = 0; i < BT_CNT; i++)
-  {
-    if(btTrigger[i])
+    Keyboard.print(btCommand[actionNr]);  
+    
+    int pos = 0;
+    String cmd = btCommand[actionNr];
+    String send = "";
+    for(pos = 0; pos < cmd.length(); pos++)
     {
-      Keyboard.print(btCommand[i]);  
-      btLedToggle(i);
+      if(cmd[pos] == char(STX))// start of text
+      {
+        send += cmd[pos]; // add char to sendstring
+      }
+      else if(cmd[pos] == char(ETX))
+      {
+        Keyboard.print(send);
+        send = "";
+      }
+      else if(cmd[pos] == char(SI))
+      {
+        Keyboard.press(cmd[++pos]);
+      }
+      else if(cmd[pos] == char(SO))
+      {
+        Keyboard.release(cmd[++pos]);
+      }
+      else
+      {
+        Keyboard.write(cmd[pos]);
+      }
     }
-  }
+    Keyboard.releaseAll();
 }
 
 void btLedToggle(int ledNr)
