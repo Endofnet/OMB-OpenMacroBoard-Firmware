@@ -1,6 +1,7 @@
 #include <Adafruit_NeoPixel.h>
 #include "Keyboard.h"
 #include "ButtonClass.h"
+#include <EEPROM.h>
 
 #pragma region Buttons
 // Buttons
@@ -11,9 +12,6 @@
 #define BTP        String("#b~") // Button press
 #define BTR        String("~b#") // Button release
 int btPins[BT_CNT] = {A6, A11, A7, A8, A9, A10, 5, 13, A0, A1};
-uint8_t btStates[BT_CNT] = {1};
-int btCounter[BT_CNT] = {0};
-uint8_t btTrigger[BT_CNT] = {0};
 String btCommand[BT_CNT] = {""};
 Button buttons[BT_CNT];
 #pragma endregion
