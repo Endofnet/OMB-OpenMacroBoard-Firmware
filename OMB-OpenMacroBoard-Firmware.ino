@@ -132,6 +132,10 @@ void ParseCommand(String cmdStr)
     {
       clearSettings();
     }
+    else if(command == "dmp")
+    {
+      dumpSettings();
+    }
   }
 }
 
@@ -272,6 +276,20 @@ void clearSettings()
   for (int i = 0 ; i < EEPROM.length() ; i++) 
   {
     EEPROM.update(i, 0);
+  }
+}
+
+void dumpSettings()
+{
+  for(int i = 0; i < BT_CNT; i++)
+  {
+    Serial.print(i);
+    Serial.print(":");
+    Serial.print(buttons[i].getColor());
+    Serial.print(":");
+    Serial.print(buttons[i].getEffect());
+    Serial.print(":");
+    Serial.println(btCommand[i]);
   }
 }
 #pragma endregion
