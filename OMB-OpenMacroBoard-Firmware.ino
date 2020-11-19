@@ -3,6 +3,8 @@
 #include "ButtonClass.h"
 #include <EEPROM.h>
 
+#define VERSION_MAGIC   String("OMB10")
+
 #pragma region Buttons
 // Buttons
 #define BT_CNT    10
@@ -215,6 +217,12 @@ void setButtonColor(int ledNr, int r, int g, int b)
 void saveSettings()
 {
   int addr = 0;
+  // write magic
+  for(int i = 0; i < VERSION_MAGIC.length(); i++)
+  {
+    EEPROM.put(addr, VERSION_MAGIC[i]);
+    addr += sizeof(char);
+  }
   // brightness 1 byte
   EEPROM.put(addr, brightness);
   addr += sizeof(uint8_t);
@@ -239,11 +247,38 @@ void saveSettings()
     EEPROM.put(addr, eff);
     addr += sizeof(uint8_t);
   }
+  // commandstrings
+  for(int i = 0; i < BT_CNT; i++)
+  {
+    uint8_t len = btCommand[i].length();
+    EEPROM.put(addr, len);
+    addr += sizeof(uint8_t);
+    for(int p = 0; p < len; p++)
+    {
+      EEPROM.put(addr, (char)btCommand[i][p]);
+      addr += sizeof(char);
+    }
+  }
 }
 
 void loadSettings()
 {
   int addr = 0;
+  // check magic
+  String magic = "";
+  char chr;
+  for(int i = 0; i < VERSION_MAGIC.length(); i++)
+  {
+    EEPROM.get(addr, chr);
+    addr += sizeof(char);
+    magic += chr;
+  }
+  if(magic != VERSION_MAGIC)
+  {
+    Serial.println(magic);
+    Serial.println(VERSION_MAGIC);
+    return;
+  }
   // brightness 
   EEPROM.get(addr, brightness);
   addr += sizeof(uint8_t);
@@ -268,6 +303,21 @@ void loadSettings()
     EEPROM.get(addr, eff);
     addr += sizeof(uint8_t);
     buttons[i].setEffect((Button::ColorEffect)eff);
+  }
+  // commandstrings
+  for(int i = 0; i < BT_CNT; i++)
+  {
+    uint8_t len;
+    char chr;
+    EEPROM.get(addr, len);
+    addr += sizeof(uint8_t);
+    btCommand[i] = "";
+    for(int p = 0; p < len; p++)
+    {
+      EEPROM.get(addr, chr);
+      addr += sizeof(char);
+      btCommand[i] += chr;
+    }
   }
 }
 
