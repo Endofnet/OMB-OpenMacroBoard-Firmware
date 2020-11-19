@@ -13,6 +13,7 @@ Button::Button(uint8_t pin, uint16_t ledNr, Adafruit_NeoPixel* stripRef)
     _ledNr = ledNr;
     _effect = off;
     _ledState = 0;
+    _fadeCount = 100;
     setColor(255,255,255);
     pinMode(_pin, INPUT_PULLUP);
 }
