@@ -2,6 +2,7 @@
 #include "Keyboard.h"
 #include "ButtonClass.h"
 
+#pragma region Buttons
 // Buttons
 #define BT_CNT    10
 #define TRG_LIM   2
@@ -14,15 +15,14 @@ uint8_t btStates[BT_CNT] = {1};
 int btCounter[BT_CNT] = {0};
 uint8_t btTrigger[BT_CNT] = {0};
 String btCommand[BT_CNT] = {""};
+Button buttons[BT_CNT];
+#pragma endregion
 
+#pragma region LED
 // LED 
 #define LED_PIN    11
 Adafruit_NeoPixel leds(BT_CNT, LED_PIN, NEO_GRB + NEO_KHZ800);
-uint32_t btCol[BT_CNT] = {0};
-uint8_t btLedState[BT_CNT] = {0};
-
-Button buttons[BT_CNT];
-
+#pragma endregion
 
 void setup() {  
   // LED
@@ -30,29 +30,16 @@ void setup() {
   leds.show();
   leds.setBrightness(127); 
   alive();
+  
   // Buttons
   for(int i = 0; i < BT_CNT; i++)
   {
     buttons[i] = Button(btPins[i], i, &leds);
+    buttons[i].setEffect(Button::ColorEffect::solid);
     btCommand[i] = String(i);
   }
-  btCommand[8] = BTP + (char)KEY_LEFT_SHIFT + BTP+ 'r' + BTR + (char)KEY_LEFT_SHIFT;
-  btCommand[9] = STXT + "test" + ETXT;
-  // DEBUG LED
-  buttons[0].setEffect(Button::ColorEffect::off);
-  buttons[1].setEffect(Button::ColorEffect::solid);
-  buttons[2].setEffect(Button::ColorEffect::onPush);
-  buttons[3].setEffect(Button::ColorEffect::onIdle);
-  buttons[4].setEffect(Button::ColorEffect::toggle);
-  buttons[5].setEffect(Button::ColorEffect::fade);
-  buttons[5].setFadeCount(100);
-  buttons[6].setEffect(Button::ColorEffect::invFade);
-  buttons[6].setFadeCount(200);
-  buttons[7].setEffect(Button::ColorEffect::remote);
-  buttons[8].setEffect(Button::ColorEffect::off);
-  buttons[9].setEffect(Button::ColorEffect::off);
-
   Keyboard.begin();
+  
   // Serial
   Serial.begin(115200);
 }
@@ -207,3 +194,15 @@ void setButtonColor(int ledNr, int r, int g, int b)
     buttons[ledNr].setColor(r, g, b);
   }
 }
+
+#pragma region eeprom
+void saveSettings()
+{
+
+}
+
+void loadSettings()
+{
+
+}
+#pragma endregion
