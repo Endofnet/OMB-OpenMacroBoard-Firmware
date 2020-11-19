@@ -37,7 +37,7 @@ class Button
         uint8_t _g;
         uint8_t _b;
         float _fadeFactor;
-        int _color;
+        uint32_t _color;
         int8_t _counter;
         void setLED();
 };

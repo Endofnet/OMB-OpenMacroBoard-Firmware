@@ -48,8 +48,8 @@ void Button::setColor(uint8_t r, uint8_t g, uint8_t b)
 void Button::setColor(uint16_t hue)
 {
     _color = Adafruit_NeoPixel::ColorHSV(hue);
-    _r = (uint8_t)(_color >> 16),
-    _g = (uint8_t)(_color >>  8),
+    _r = (uint8_t)(_color >> 16);
+    _g = (uint8_t)(_color >>  8);
     _b = (uint8_t)_color;
     setLED();
 }
