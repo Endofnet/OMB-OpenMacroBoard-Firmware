@@ -37,6 +37,7 @@ void setup() {
     buttons[i].setEffect(Button::ColorEffect::solid);
     btCommand[i] = String(i);
   }
+  loadSettings();
   Keyboard.begin();
   
   // Serial
