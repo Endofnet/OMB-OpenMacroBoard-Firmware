@@ -78,7 +78,7 @@ void checkSerial()
 
 void ParseCommand(String cmdStr)
 {
-  if(cmdStr.length() > 3)
+  if(cmdStr.length() >= 3)
   {
     String command = cmdStr.substring(0,3);
     if(command == "rgb")
