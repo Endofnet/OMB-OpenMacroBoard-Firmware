@@ -20,13 +20,14 @@ Button buttons[BT_CNT];
 // LED 
 #define LED_PIN    11
 Adafruit_NeoPixel leds(BT_CNT, LED_PIN, NEO_GRB + NEO_KHZ800);
+uint8_t brightness = 127;
 #pragma endregion
 
 void setup() {  
   // LED
   leds.begin();
   leds.show();
-  leds.setBrightness(127); 
+  leds.setBrightness(brightness); 
   alive();
   
   // Buttons
@@ -105,7 +106,7 @@ void ParseCommand(String cmdStr)
     }
     else if(command == "brg")
     {
-      int brightness = (cmdStr.substring(3, 6)).toInt();
+      brightness = (cmdStr.substring(3, 6)).toInt();
       leds.setBrightness(brightness);
       leds.show();
     }
@@ -117,6 +118,14 @@ void ParseCommand(String cmdStr)
       {
         btCommand[btNr] = btCmd;
       }
+    }
+    else if(command == "loa")
+    {
+      loadSettings();
+    }
+    else if(command == "sav")
+    {
+      saveSettings();
     }
   }
 }
@@ -196,11 +205,60 @@ void setButtonColor(int ledNr, int r, int g, int b)
 #pragma region eeprom
 void saveSettings()
 {
-
+  int addr = 0;
+  // brightness 1 byte
+  EEPROM.put(addr, brightness);
+  addr += sizeof(uint8_t);
+  // led colors 3 bytes each
+  for(int i = 0; i < BT_CNT; i++)
+  {
+    uint32_t col = buttons[i].getColor();
+    uint8_t _r = (uint8_t)(col >> 16);
+    uint8_t _g = (uint8_t)(col >>  8);
+    uint8_t _b = (uint8_t)col;
+    EEPROM.put(addr, _r);
+    addr += sizeof(uint8_t);
+    EEPROM.put(addr, _g);
+    addr += sizeof(uint8_t);
+    EEPROM.put(addr, _b);
+    addr += sizeof(uint8_t);
+  }
+  // led effects 1 byte each
+  for(int i = 0; i < BT_CNT; i++)
+  {
+    uint8_t eff = (uint8_t)buttons[i].getEffect();
+    EEPROM.put(addr, eff);
+    addr += sizeof(uint8_t);
+  }
 }
 
 void loadSettings()
 {
-
+  int addr = 0;
+  // brightness 
+  EEPROM.get(addr, brightness);
+  addr += sizeof(uint8_t);
+  leds.setBrightness(brightness);
+  leds.show();
+  // led colors
+  for(int i = 0; i < BT_CNT; i++)
+  {
+    uint8_t r, g, b;
+    EEPROM.get(addr, r);
+    addr += sizeof(uint8_t);
+    EEPROM.get(addr, g);
+    addr += sizeof(uint8_t);
+    EEPROM.get(addr, b);
+    addr += sizeof(uint8_t);
+    setButtonColor(i, r, g, b);
+  }
+  // led effects
+  for(int i = 0; i < BT_CNT; i++)
+  {
+    uint8_t eff;
+    EEPROM.get(addr, eff);
+    addr += sizeof(uint8_t);
+    buttons[i].setEffect((Button::ColorEffect)eff);
+  }
 }
 #pragma endregion
