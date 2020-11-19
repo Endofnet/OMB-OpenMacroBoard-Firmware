@@ -5,10 +5,10 @@
 // Buttons
 #define BT_CNT    10
 #define TRG_LIM   2
-#define STX       2 // Start of text
-#define ETX       3 // End of text
-#define SO        14 // ShiftOut
-#define SI        15 // ShiftIn
+#define STXT       String("~t#") // Start of text
+#define ETXT       String("#t~") // End of text
+#define BTP        String("#b~") // Button press
+#define BTR        String("~b#") // Button release
 int btPins[BT_CNT] = {A6, A11, A7, A8, A9, A10, 5, 13, A0, A1};
 uint8_t btStates[BT_CNT] = {1};
 int btCounter[BT_CNT] = {0};
@@ -29,13 +29,15 @@ void setup() {
   leds.begin();
   leds.show();
   leds.setBrightness(100); 
+  alive();
   // Buttons
   for(int i = 0; i < BT_CNT; i++)
   {
     buttons[i] = Button(btPins[i], i, &leds);
     btCommand[i] = String(i);
   }
-  btCommand[9] = "test";
+  btCommand[8] = BTP + (char)KEY_LEFT_SHIFT + BTP+ 'r' + BTR + (char)KEY_LEFT_SHIFT;
+  btCommand[9] = STXT + "test" + ETXT;
   // DEBUG LED
   buttons[0].setEffect(Button::ColorEffect::off);
   buttons[1].setEffect(Button::ColorEffect::solid);
@@ -60,6 +62,21 @@ void loop() {
   checkSerial();
   leds.show();
   delay(5);
+}
+
+void alive()
+{
+  leds.fill(leds.Color(255,0,0), 0, BT_CNT);
+  leds.show();
+  delay(250);
+  leds.fill(leds.Color(0,255,0), 0, BT_CNT);
+  leds.show();
+  delay(250);
+  leds.fill(leds.Color(0,0,255), 0, BT_CNT);
+  leds.show();
+  delay(250);
+  leds.fill(leds.Color(0,0,0), 0, BT_CNT);
+  leds.show();
 }
 
 void checkSerial()
@@ -92,6 +109,24 @@ void ParseCommand(String cmdStr)
       int hue = (cmdStr.substring(6, 11)).toInt();
       setButtonColor(led, hue);
     }
+    else if(command == "eff")
+    {
+      int btNr = (cmdStr.substring(3, 6)).toInt();
+      uint8_t effNr = (cmdStr.substring(6, 8)).toInt();
+      if(btNr < BT_CNT)
+      {
+        buttons[btNr].setEffect((Button::ColorEffect)effNr);
+      }
+    }
+    else if(command == "cmd")
+    {
+      int btNr = (cmdStr.substring(3, 6)).toInt();
+      String btCmd = (cmdStr.substring(6));
+      if(btNr < BT_CNT)
+      {
+        btCommand[btNr] = btCmd;
+      }
+    }
   }
 }
 
@@ -108,30 +143,40 @@ void updateButtons()
 }
 
 void doAction(int actionNr)
-{
-    Keyboard.print(btCommand[actionNr]);  
-    
+{    
     int pos = 0;
     String cmd = btCommand[actionNr];
     String send = "";
+    bool textMode = false;
     for(pos = 0; pos < cmd.length(); pos++)
     {
-      if(cmd[pos] == char(STX))// start of text
+      if((cmd.substring(pos, pos + 3) == STXT) && (!textMode))// check start of text when not in textmode
       {
+        textMode = true;
+        pos += 3;
         send += cmd[pos]; // add char to sendstring
       }
-      else if(cmd[pos] == char(ETX))
+      else if((cmd.substring(pos, pos + 3) == ETXT) && (textMode)) // check end of text when in textmode
       {
+        textMode = false;
+        pos += 3;
         Keyboard.print(send);
         send = "";
       }
-      else if(cmd[pos] == char(SI))
+      else if(textMode)
       {
-        Keyboard.press(cmd[++pos]);
+        send += cmd[pos];
       }
-      else if(cmd[pos] == char(SO))
+      else if(cmd.substring(pos, pos + 3) == BTP)
       {
-        Keyboard.release(cmd[++pos]);
+        pos += 3;
+        
+        Keyboard.press(cmd[pos]);
+      }
+      else if(cmd.substring(pos, pos + 3) == BTR)
+      {
+        pos += 3;
+        Keyboard.release(cmd[pos]);
       }
       else
       {
@@ -141,23 +186,11 @@ void doAction(int actionNr)
     Keyboard.releaseAll();
 }
 
-void btLedToggle(int ledNr)
-{
-  if(btLedState[ledNr])
-  {
-    setButtonLed(ledNr, 0);
-  }
-  else
-  {
-    setButtonLed(ledNr, 1);
-  }
-}
-
 void setButtonColor(int ledNr, int hue)
 {
   if(ledNr < BT_CNT)
   {
-    btCol[ledNr] = leds.ColorHSV(hue);
+    buttons[ledNr].setColor(hue);
   }
 }
 
@@ -165,21 +198,6 @@ void setButtonColor(int ledNr, int r, int g, int b)
 {
   if(ledNr < BT_CNT)
   {
-    btCol[ledNr] = leds.Color(r,g,b);
+    buttons[ledNr].setColor(r, g, b);
   }
-}
-
-void setButtonLed(int ledNr, int state)
-{
-  if(state)
-  {
-    btLedState[ledNr] = 1;
-    leds.setPixelColor(ledNr, btCol[ledNr]);
-  }
-  else
-  {
-    btLedState[ledNr] = 0;
-    leds.setPixelColor(ledNr, 0);
-  }
-  leds.show();
 }
