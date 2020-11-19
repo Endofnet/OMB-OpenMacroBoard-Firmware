@@ -54,7 +54,7 @@ void Button::setColor(uint16_t hue)
     setLED();
 }
 // returns the 32bit led color
-int Button::getColor()
+uint32_t Button::getColor()
 {
     return _color;
 }

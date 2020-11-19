@@ -16,7 +16,7 @@ class Button
         #pragma region LED-related
         void setColor(uint8_t r, uint8_t g, uint8_t b);
         void setColor(uint16_t hue);
-        int getColor();
+        uint32_t getColor();
         void setLEDState(uint8_t state);
         uint8_t getLEDState();
         void setEffect(ColorEffect effect);
