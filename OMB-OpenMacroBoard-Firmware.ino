@@ -28,7 +28,7 @@ void setup() {
   // LED
   leds.begin();
   leds.show();
-  leds.setBrightness(100); 
+  leds.setBrightness(127); 
   alive();
   // Buttons
   for(int i = 0; i < BT_CNT; i++)
@@ -117,6 +117,12 @@ void ParseCommand(String cmdStr)
       {
         buttons[btNr].setEffect((Button::ColorEffect)effNr);
       }
+    }
+    else if(command == "brg")
+    {
+      int brightness = (cmdStr.substring(3, 6)).toInt();
+      leds.setBrightness(brightness);
+      leds.show();
     }
     else if(command == "cmd")
     {
