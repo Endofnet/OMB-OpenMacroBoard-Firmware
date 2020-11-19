@@ -127,6 +127,10 @@ void ParseCommand(String cmdStr)
     {
       saveSettings();
     }
+    else if(command == "clr")
+    {
+      clearSettings();
+    }
   }
 }
 
@@ -259,6 +263,14 @@ void loadSettings()
     EEPROM.get(addr, eff);
     addr += sizeof(uint8_t);
     buttons[i].setEffect((Button::ColorEffect)eff);
+  }
+}
+
+void clearSettings()
+{
+  for (int i = 0 ; i < EEPROM.length() ; i++) 
+  {
+    EEPROM.update(i, 0);
   }
 }
 #pragma endregion
