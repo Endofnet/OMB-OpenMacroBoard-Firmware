@@ -138,6 +138,10 @@ void ParseCommand(String cmdStr)
     {
       dumpSettings();
     }
+    else if(command == "rst")
+    {
+      asm volatile ("jmp 0");
+    }
   }
 }
 
