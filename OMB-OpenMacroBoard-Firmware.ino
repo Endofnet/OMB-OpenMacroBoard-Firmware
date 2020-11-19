@@ -13,6 +13,7 @@
 #define ETXT       String("#t~") // End of text
 #define BTP        String("#b~") // Button press
 #define BTR        String("~b#") // Button release
+#define KEY_CODE   String("~k#") // Keycode
 int btPins[BT_CNT] = {A6, A11, A7, A8, A9, A10, 5, 13, A0, A1};
 String btCommand[BT_CNT] = {""};
 Button buttons[BT_CNT];
@@ -31,7 +32,6 @@ void setup() {
   leds.show();
   leds.setBrightness(brightness); 
   alive();
-  
   // Buttons
   for(int i = 0; i < BT_CNT; i++)
   {
@@ -182,16 +182,42 @@ void doAction(int actionNr)
       {
         send += cmd[pos];
       }
+      else if(cmd.substring(pos, pos + 3) == KEY_CODE)
+      {
+        pos += 3;
+        int value = cmd.substring(pos, pos + 3).toInt();
+        pos += 2;
+        Keyboard.write((char)value);
+      }
       else if(cmd.substring(pos, pos + 3) == BTP)
       {
         pos += 3;
-        
-        Keyboard.press(cmd[pos]);
+        if(cmd.substring(pos, pos + 3) == KEY_CODE)
+        {
+          pos += 3;
+          int value = (cmd.substring(pos, pos + 3)).toInt();
+          pos += 2;
+          Keyboard.press((char)value);
+        }
+        else
+        {
+          Keyboard.press(cmd[pos]);
+        }
       }
       else if(cmd.substring(pos, pos + 3) == BTR)
       {
         pos += 3;
-        Keyboard.release(cmd[pos]);
+        if(cmd.substring(pos, pos + 3) == KEY_CODE)
+        {
+          pos += 3;
+          int value = cmd.substring(pos, pos + 3).toInt();
+          pos += 2;
+          Keyboard.release((char)value);
+        }
+        else
+        {
+          Keyboard.release(cmd[pos]);
+        }
       }
       else
       {
