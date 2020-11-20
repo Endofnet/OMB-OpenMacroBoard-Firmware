@@ -29,7 +29,7 @@ The commands need to be terminated with a newline character **\n**. If a paramet
 
   * **rgbNNNRRRGGGBBB** sets a buttons color to an r, g, b value  
   * **hueHHH** sets a buttons color to a given hue value with saturation and value on max.
-  * **effEEE** the effect number the button should use.
+  * **effNNNEE** the effect number the button should use.
     * 0 = off
     * 1 = on
     * 2 = toggle on push
@@ -54,6 +54,6 @@ The commands need to be terminated with a newline character **\n**. If a paramet
   * **GGG** green component of an rgb color. From 0 to 255.
   * **BBB** blue component of an rgb color. From 0 to 255.
   * **HHH** a colors hue value. From 0 to 255.
-  * **EEE** the effect value
+  * **EE** the effect value
   * **XXX** From 0 to 255.
   * **S-S** Commandstring
