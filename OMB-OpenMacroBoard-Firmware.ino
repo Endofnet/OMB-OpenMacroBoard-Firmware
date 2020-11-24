@@ -2,8 +2,23 @@
 #include "Keyboard.h"
 #include "ButtonClass.h"
 #include <EEPROM.h>
+#pragma region U8GLib
+#include <U8g2lib.h>
+#ifdef U8X8_HAVE_HW_SPI
+#include <SPI.h>
+#endif
+#ifdef U8X8_HAVE_HW_I2C
+#include <Wire.h>
+#endif
+#pragma endregion
 
 #define VERSION_MAGIC   String("OMB10")
+
+#pragma region OLED
+// OLED
+U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, U8X8_PIN_NONE);
+#pragma endregion
+
 
 #pragma region Buttons
 // Buttons
@@ -32,6 +47,8 @@ void setup() {
   leds.show();
   leds.setBrightness(brightness); 
   alive();
+  // OLED
+  oledInit();
   // Buttons
   for(int i = 0; i < BT_CNT; i++)
   {
@@ -66,6 +83,22 @@ void alive()
   delay(250);
   leds.fill(leds.Color(0,0,0), 0, BT_CNT);
   leds.show();
+}
+
+void oledInit()
+{
+  u8g2.begin();
+  u8g2.clearBuffer();
+  u8g2.setFont(u8g2_font_6x10_tf);
+  u8g2.setFontRefHeightExtendedText();
+  u8g2.setDrawColor(1);
+  u8g2.setFontPosTop();
+  u8g2.setFontDirection(0);
+  String versionStr = "O.M.B. V" + String(VERSION_MAGIC[3]) + "." + String(VERSION_MAGIC[4]);
+  char chrArr[20];
+  versionStr.toCharArray(chrArr,versionStr.length()+1);
+  u8g2.drawStr(10,10,chrArr);
+  u8g2.sendBuffer();
 }
 
 void checkSerial()
