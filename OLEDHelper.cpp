@@ -66,8 +66,12 @@ void OLED::mainScreen(uint8_t brg)
     char buff[25];
     _u8g->firstPage(); 
     do {
-        snprintf(buff, 25, "O.M.B.   LED:%d\%", int(brg/100));
+        snprintf(buff, 25, "O.M.B. LED:%d%%", int(brg/2.55));
         _u8g->setFont(u8g_font_5x8);
+        _u8g->setFontRefHeightExtendedText();
+        _u8g->setFontPosTop();
         _u8g->drawStr(0,0,buff);
+        _u8g->drawLine(0,9, _u8g->getWidth(), 9);
+        _u8g->drawLine(32,0,32,8);
     } while( _u8g->nextPage() );
 }

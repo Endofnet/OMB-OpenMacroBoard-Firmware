@@ -77,7 +77,6 @@ void loop() {
   checkSerial();
   leds.show();
   delay(5);
-  oled.mainScreen(brightness);
 }
 
 void alive()
@@ -98,6 +97,7 @@ void alive()
 void oledInit()
 {
   oled.showSplash(VERSION_MAJOR, VERSION_MINOR);
+  oled.mainScreen(brightness);
 }
 
 void checkSerial()
