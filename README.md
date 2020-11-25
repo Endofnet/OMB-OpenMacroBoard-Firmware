@@ -10,6 +10,7 @@ It allows the O.M.B. to work as a basic Macro-Keyboard with custom, stringbased 
 ### I have a board that already contains a bootloader
 
 To "install" the firmware you just need an [O.M.B. Baseboard](https://github.com/Endofnet/OMB-OpenMacroBoard "OMB on GitHub") and the [Arduino IDE](https://www.arduino.cc/en/software "Arduino software page") or VS-Code extension. The O.M.B. uses the Arduino-Bootloader so you can just select "Arduino/Genuino Micro" in the Boards tab and you can upload the sketch.<br/>
+*Note: You may need to rename the extracted folder containing the .ino-File to "OMB-OpenMacroBoard-Firmware"*<br/>
 <br/>
 <br/>
 
