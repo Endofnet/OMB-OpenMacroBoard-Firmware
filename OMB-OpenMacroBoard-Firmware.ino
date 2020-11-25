@@ -9,8 +9,10 @@
 // Uncomment the following line to enable OLED Support
 #define USE_OLED
 #ifdef USE_OLED
-// Setup your OLED type here. For reference see https://github.com/olikraus/u8glib/wiki/device#supported-devices
+// Uncomment the line corresponding to your OLED
 U8GLIB_SH1106_128X64 u8g(U8G_I2C_OPT_DEV_0);
+// For other OLED types see https://github.com/olikraus/u8glib/wiki/device#supported-devices
+// Only above types are tested, but others should work.
 #endif
 #pragma endregion
 

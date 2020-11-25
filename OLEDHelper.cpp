@@ -52,3 +52,10 @@ void OLED::showVersion(uint8_t major, uint8_t minor)
         _u8g->drawStr(posX,posY,chrArr);
     } while( _u8g->nextPage() );
 }
+
+void OLED::blank()
+{
+    _u8g->firstPage(); 
+    do {
+    } while( _u8g->nextPage() );
+}
