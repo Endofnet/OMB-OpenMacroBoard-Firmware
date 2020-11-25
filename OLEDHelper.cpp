@@ -59,3 +59,15 @@ void OLED::blank()
     do {
     } while( _u8g->nextPage() );
 }
+
+void OLED::mainScreen(uint8_t brg)
+{
+    blank();
+    char buff[25];
+    _u8g->firstPage(); 
+    do {
+        snprintf(buff, 25, "O.M.B.   LED:%d\%", int(brg/100));
+        _u8g->setFont(u8g_font_5x8);
+        _u8g->drawStr(0,0,buff);
+    } while( _u8g->nextPage() );
+}

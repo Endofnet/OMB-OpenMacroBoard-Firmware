@@ -77,6 +77,7 @@ void loop() {
   checkSerial();
   leds.show();
   delay(5);
+  oled.mainScreen(brightness);
 }
 
 void alive()
