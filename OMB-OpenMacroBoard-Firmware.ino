@@ -1,24 +1,31 @@
+#include <U8glib.h>
 #include <Adafruit_NeoPixel.h>
 #include "Keyboard.h"
 #include "ButtonClass.h"
+#include "OLEDHelper.h"
 #include <EEPROM.h>
-#pragma region U8GLib
-#include <U8g2lib.h>
-#ifdef U8X8_HAVE_HW_SPI
-#include <SPI.h>
-#endif
-#ifdef U8X8_HAVE_HW_I2C
-#include <Wire.h>
+
+#pragma region USER SETTINGS
+// Uncomment the following line to enable OLED Support
+#define USE_OLED
+#ifdef USE_OLED
+// Setup your OLED type here. For reference see https://github.com/olikraus/u8glib/wiki/device#supported-devices
+U8GLIB_SH1106_128X64 u8g(U8G_I2C_OPT_DEV_0);
 #endif
 #pragma endregion
 
-#define VERSION_MAGIC   String("OMB10")
+
+#define VERSION_MAJOR   1
+#define VERSION_MINOR   0
+#define VERSION_MAGIC   String("OMB" + String(VERSION_MAJOR) + String(VERSION_MINOR))
 
 #pragma region OLED
-// OLED
-U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, U8X8_PIN_NONE);
+#ifdef USE_OLED
+OLED oled(&u8g);
+#else
+OLED oled();
+#endif
 #pragma endregion
-
 
 #pragma region Buttons
 // Buttons
@@ -87,18 +94,7 @@ void alive()
 
 void oledInit()
 {
-  u8g2.begin();
-  u8g2.clearBuffer();
-  u8g2.setFont(u8g2_font_6x10_tf);
-  u8g2.setFontRefHeightExtendedText();
-  u8g2.setDrawColor(1);
-  u8g2.setFontPosTop();
-  u8g2.setFontDirection(0);
-  String versionStr = "O.M.B. V" + String(VERSION_MAGIC[3]) + "." + String(VERSION_MAGIC[4]);
-  char chrArr[20];
-  versionStr.toCharArray(chrArr,versionStr.length()+1);
-  u8g2.drawStr(10,10,chrArr);
-  u8g2.sendBuffer();
+  oled.showSplash(VERSION_MAJOR, VERSION_MINOR);
 }
 
 void checkSerial()
