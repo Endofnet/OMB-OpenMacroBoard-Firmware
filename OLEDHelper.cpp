@@ -21,7 +21,7 @@ void OLED::showSplash(uint8_t major, uint8_t minor)
     _u8g->firstPage(); 
     do
     {
-        _u8g->setFont(u8g_font_courB14);
+        _u8g->setFont(u8g_font_courB14r);
         _u8g->setFontRefHeightExtendedText();
         _u8g->setDefaultForegroundColor();
         _u8g->setFontPosTop();
@@ -39,7 +39,7 @@ void OLED::showVersion(uint8_t major, uint8_t minor)
     _u8g->firstPage(); 
     do
     {
-        _u8g->setFont(u8g_font_courB14);
+        _u8g->setFont(u8g_font_courB14r);
         _u8g->setFontRefHeightExtendedText();
         _u8g->setFontPosTop();
         char chrArr[8];
@@ -67,7 +67,7 @@ void OLED::mainScreen(uint8_t brg)
     _u8g->firstPage(); 
     do {
         snprintf(buff, 25, "O.M.B. LED:%d%%", int(brg/2.55));
-        _u8g->setFont(u8g_font_5x8);
+        _u8g->setFont(u8g_font_5x8r);
         _u8g->setFontRefHeightExtendedText();
         _u8g->setFontPosTop();
         _u8g->drawStr(0,0,buff);

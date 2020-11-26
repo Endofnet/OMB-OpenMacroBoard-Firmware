@@ -144,6 +144,7 @@ void ParseCommand(String cmdStr)
       brightness = (cmdStr.substring(3, 6)).toInt();
       leds.setBrightness(brightness);
       leds.show();
+      oled.mainScreen(brightness);
     }
     else if(command == "cmd")
     {
