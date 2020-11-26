@@ -61,10 +61,9 @@ void OLED::blank()
     } while( _u8g->nextPage() );
 }
 
-void OLED::mainScreen(uint8_t brg)
+void OLED::mainScreen(uint8_t brg, uint8_t tCPU, uint8_t tGPU, uint8_t ldCPU, uint8_t ldGPU)
 {
     CHECK_VALID
-    blank();
     char buff[25];
     _u8g->firstPage(); 
     do {
@@ -75,6 +74,12 @@ void OLED::mainScreen(uint8_t brg)
         _u8g->drawStr(0,0,buff);
         _u8g->drawLine(0,9, _u8g->getWidth(), 9);
         _u8g->drawLine(32,0,32,8);
+
+        _u8g->setFont(u8g_font_courB14r);
+        snprintf(buff, 25, "CPU:%02dC %d%%", tCPU, ldCPU);
+        _u8g->drawStr(0,25,buff);
+        snprintf(buff, 25, "GPU:%02dC %d%%", tGPU, ldGPU);
+        _u8g->drawStr(0,50,buff);
     } while( _u8g->nextPage() );
 }
 

@@ -27,6 +27,8 @@ OLED oled(&u8g);
 #else
 OLED oled();
 #endif
+uint8_t tCPU, tGPU, ldCPU, ldGPU = 0;
+
 #pragma endregion
 
 #pragma region Buttons
@@ -72,7 +74,7 @@ void setup() {
   Serial.begin(115200);
 
   // Switch to main screen
-  oled.mainScreen(brightness);
+  oled.mainScreen(brightness, tCPU, tGPU, ldCPU, ldGPU);
 }
 
 void loop() {
@@ -146,7 +148,7 @@ void ParseCommand(String cmdStr)
       brightness = (cmdStr.substring(3, 6)).toInt();
       leds.setBrightness(brightness);
       leds.show();
-      oled.mainScreen(brightness);
+      oled.mainScreen(brightness, tCPU, tGPU, ldCPU, ldGPU);
     }
     else if(command == "cmd")
     {
@@ -172,6 +174,14 @@ void ParseCommand(String cmdStr)
     else if(command == "dmp")
     {
       dumpSettings();
+    }
+    else if(command == "tmp")
+    {
+      tCPU = cmdStr.substring(3,6).toInt();
+      tGPU = cmdStr.substring(6,9).toInt();
+      ldCPU = cmdStr.substring(15,18).toInt();
+      ldGPU = cmdStr.substring(18,21).toInt();
+      oled.mainScreen(brightness, tCPU, tGPU, ldCPU, ldGPU);
     }
     else if(command == "rst")
     {
