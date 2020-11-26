@@ -55,6 +55,7 @@ void OLED::showVersion(uint8_t major, uint8_t minor)
 
 void OLED::blank()
 {
+    CHECK_VALID
     _u8g->firstPage(); 
     do {
     } while( _u8g->nextPage() );
@@ -62,6 +63,7 @@ void OLED::blank()
 
 void OLED::mainScreen(uint8_t brg)
 {
+    CHECK_VALID
     blank();
     char buff[25];
     _u8g->firstPage(); 
@@ -74,4 +76,18 @@ void OLED::mainScreen(uint8_t brg)
         _u8g->drawLine(0,9, _u8g->getWidth(), 9);
         _u8g->drawLine(32,0,32,8);
     } while( _u8g->nextPage() );
+}
+
+void OLED::showText(char* text, uint8_t count)
+{
+    CHECK_VALID
+    _u8g->firstPage();
+    do {
+        _u8g->setFont(u8g_font_courB14r);
+        _u8g->setFontRefHeightExtendedText();
+        _u8g->setFontPosTop();
+        int posX = (_u8g->getWidth() - (_u8g->getStrWidth(" ") * count)) >> 1;
+        int posY = (_u8g->getHeight()-12) >> 1;
+        _u8g->drawStr(posX,posY,text);
+    } while( _u8g->nextPage());
 }

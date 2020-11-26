@@ -15,6 +15,7 @@ class OLED
         void showSplash(uint8_t major, uint8_t minor);
         void showVersion(uint8_t major, uint8_t minor);
         void mainScreen(uint8_t brg);
+        void showText(char* text, uint8_t count);
     private:
         U8GLIB* _u8g;
         bool _dummy;

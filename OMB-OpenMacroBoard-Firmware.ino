@@ -70,6 +70,9 @@ void setup() {
   
   // Serial
   Serial.begin(115200);
+
+  // Switch to main screen
+  oled.mainScreen(brightness);
 }
 
 void loop() {
@@ -97,7 +100,6 @@ void alive()
 void oledInit()
 {
   oled.showSplash(VERSION_MAJOR, VERSION_MINOR);
-  oled.mainScreen(brightness);
 }
 
 void checkSerial()
@@ -322,6 +324,7 @@ void saveSettings()
       addr += sizeof(char);
     }
   }
+  oled.showText("Saved!", 6);
 }
 
 void loadSettings()
@@ -338,8 +341,7 @@ void loadSettings()
   }
   if(magic != VERSION_MAGIC)
   {
-    Serial.println(magic);
-    Serial.println(VERSION_MAGIC);
+    oled.showText("Init EEPROM", 11);
     return;
   }
   // brightness 
@@ -382,6 +384,7 @@ void loadSettings()
       btCommand[i] += chr;
     }
   }
+  oled.showText("Loaded!", 7);
 }
 
 void clearSettings()
@@ -390,6 +393,7 @@ void clearSettings()
   {
     EEPROM.update(i, 0);
   }
+  oled.showText("Cleared!", 8);
 }
 
 void dumpSettings()
