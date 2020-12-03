@@ -18,7 +18,7 @@ U8GLIB_SH1106_128X64 u8g(U8G_I2C_OPT_DEV_0);
 
 
 #define VERSION_MAJOR   1
-#define VERSION_MINOR   0
+#define VERSION_MINOR   1
 #define VERSION_MAGIC   String("OMB" + String(VERSION_MAJOR) + String(VERSION_MINOR))
 
 #pragma region OLED
@@ -179,13 +179,17 @@ void ParseCommand(String cmdStr)
     {
       tCPU = cmdStr.substring(3,6).toInt();
       tGPU = cmdStr.substring(6,9).toInt();
-      ldCPU = cmdStr.substring(15,18).toInt();
-      ldGPU = cmdStr.substring(18,21).toInt();
+      ldCPU = cmdStr.substring(9,12).toInt();
+      ldGPU = cmdStr.substring(12,15).toInt();
       oled.mainScreen(brightness, tCPU, tGPU, ldCPU, ldGPU);
     }
     else if(command == "rst")
     {
       asm volatile ("jmp 0");
+    }
+    else if(command == "ver")
+    {
+      Serial.print("OMB-Version:" + VERSION_MAGIC);
     }
   }
 }
@@ -289,6 +293,17 @@ void setButtonColor(int ledNr, int r, int g, int b)
 }
 
 #pragma region eeprom
+void writeVersionHeader()
+{
+  int addr = 0;
+  // write magic
+  for(int i = 0; i < VERSION_MAGIC.length(); i++)
+  {
+    EEPROM.put(addr, VERSION_MAGIC[i]);
+    addr += sizeof(char);
+  }
+}
+
 void saveSettings()
 {
   int addr = 0;
@@ -337,6 +352,28 @@ void saveSettings()
   oled.showText("Saved!", 6);
 }
 
+void checkManualInit()
+{
+  leds.fill(leds.Color(0,0,0), 0, BT_CNT);
+  leds.setPixelColor(0, leds.Color(0,255,0));
+  leds.setPixelColor(1, leds.Color(255,0,0));
+  leds.show();
+  for(;;)
+  {
+    // Check Confirm button
+    if(buttons[0].Poll())
+    {
+      saveSettings();
+    }
+    else if(buttons[1].Poll())
+    {
+      writeVersionHeader();
+      asm volatile ("jmp 0");
+    }
+    
+  }
+}
+
 void loadSettings()
 {
   int addr = 0;
@@ -351,7 +388,8 @@ void loadSettings()
   }
   if(magic != VERSION_MAGIC)
   {
-    oled.showText("Init EEPROM", 11);
+    oled.showText("Clr EEPROM?", 11);
+    checkManualInit();
     return;
   }
   // brightness 
