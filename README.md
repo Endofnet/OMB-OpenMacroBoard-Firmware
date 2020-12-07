@@ -19,7 +19,14 @@ To "install" the firmware you just need an [O.M.B. Baseboard](https://github.com
 For this you will need an AVR-Programmer or another Arduino to act as a programmer.<br/>
 In the reference image you can find the pins you need.
 
+<b>This is the Pinout for V1.1, the first revision with a logo and the version printed on the pcb</b>
+![OMB-v1.1-Pinout](https://github.com/Endofnet/OMB-OpenMacroBoard-Firmware/raw/main/pinout_reference_v11.png "O.M.B. Pinout Reference")
+
+<b>This pinout is only for V1.0, which is probably not the version you have :)</b>
 ![OMB-Pinout](https://github.com/Endofnet/OMB-OpenMacroBoard-Firmware/raw/main/pinout_reference.png "O.M.B. Pinout Reference")
+
+<br/>
+
 After connecting the Programmer/Arduino it's recommendet to upload the Arduino bootloader with the Ardino-IDE and the follow the above steps for boards with bootloader. This makes it easy to update in the future. <br/>
 But you can also just upload the sketch directly.
 
